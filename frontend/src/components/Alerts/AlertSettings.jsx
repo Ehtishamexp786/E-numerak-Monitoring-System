@@ -35,7 +35,7 @@ export default function AlertSettings() {
     <form onSubmit={handleSave} className="rounded-2xl border border-hairline bg-panel p-5">
       <h3 className="font-display text-sm font-semibold text-paper">Default WhatsApp numbers</h3>
       <p className="mt-1 text-xs text-mist">
-        These numbers will be automatically suggested when adding a new monitor — you can change them for each monitor if needed.
+        These numbers will be automatically suggested when adding a new monitor. You can customize them for individual monitors later if needed.
       </p>
       <textarea
         value={draft}

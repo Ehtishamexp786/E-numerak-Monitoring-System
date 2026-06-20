@@ -24,7 +24,7 @@ export default function Settings() {
 
   return (
     <div>
-      <Topbar title="Settings" subtitle="Notification defaults and backend connection" />
+      <Topbar title="Settings" subtitle="Notification defaults and backend configuration" />
 
       <div className="px-6 py-6 md:px-8 space-y-6 max-w-2xl">
         <div className="rounded-2xl border border-hairline bg-panel p-5">
@@ -34,7 +34,7 @@ export default function Settings() {
           </div>
           <p className="mt-2 font-mono text-xs text-mist">{BASE_URL}</p>
           <p className="mt-1 text-xs text-mist">
-            This is set in your .env file via <span className="font-mono text-paper">VITE_API_BASE_URL</span>.
+            This is configured via the <span className="font-mono text-paper">VITE_API_BASE_URL</span> variable in your .env file.
           </p>
         </div>
 
@@ -43,14 +43,14 @@ export default function Settings() {
         <div className="rounded-2xl border border-flatline/30 bg-panel p-5">
           <h3 className="font-display text-sm font-semibold text-flatline">Danger zone</h3>
           <p className="mt-1 text-xs text-mist">
-            Permanently delete all alert history. Monitors and logs will not be affected.
+            Permanently clear all alert history. Monitors and logs will not be affected.
           </p>
           <button
             onClick={() => setConfirmClear(true)}
             className="mt-3 flex items-center gap-2 rounded-xl border border-flatline/30 px-4 py-2 text-sm font-medium text-flatline transition hover:bg-flatline/10"
           >
             {cleared ? <Check size={14} /> : <Trash2 size={14} />}
-            {cleared ? "Cleared" : "Clear all alerts"}
+            {cleared ? "History cleared" : "Clear all alerts"}
           </button>
         </div>
       </div>
@@ -73,7 +73,7 @@ export default function Settings() {
               className="flex items-center gap-2 rounded-xl bg-flatline px-4 py-2.5 text-sm font-semibold text-void transition hover:bg-flatline/90 disabled:opacity-60"
             >
               {clearing && <Loader2 size={14} className="animate-spin" />}
-              Yes, clear
+              Delete all alerts
             </button>
           </div>
         </Modal>

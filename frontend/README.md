@@ -40,6 +40,19 @@ open (`allow_origins=["*"]`) in your `main.py`, so no backend change needed.
 If your backend runs on a different host/port, edit `VITE_API_BASE_URL` in
 `.env.local`.
 
+## Authentication
+
+The dashboard now requires signing in with the password set in the backend's
+`.env` file (`DASHBOARD_PASSWORD`). The backend issues a signed JWT on login;
+the frontend stores it in `localStorage` and attaches it to every API call.
+If the token expires (12 hours by default, configurable via
+`ACCESS_TOKEN_EXPIRE_MINUTES`), the app automatically signs the user out and
+returns to `/login`.
+
+Required backend changes (see the code provided separately): `config.py`,
+`.env`, `requirements.txt`, `app/core/security.py`, `app/api/routes/auth.py`,
+and `main.py` all need to be updated for this to work end-to-end.
+
 ## File structure (as planned, plus a few necessary additions)
 
 ```
@@ -62,11 +75,13 @@ frontend/
 │   │   ├── Layout/                  # + added: Sidebar.jsx, Topbar.jsx
 │   │   └── common/                  # + added: StatusPill, Modal, EmptyState
 │   ├── pages/
+│   │   ├── Login.jsx                # + added: password sign-in page
 │   │   ├── Dashboard.jsx
 │   │   ├── Monitors.jsx
 │   │   ├── Alerts.jsx
 │   │   ├── Logs.jsx                 # + added (was missing a route owner)
 │   │   └── Settings.jsx
+│   ├── context/AuthContext.jsx      # + added: login/logout/session state
 │   ├── utils/format.js              # + added: time/url formatting helpers
 │   ├── services/api.js              # every backend route wired in
 │   ├── App.jsx

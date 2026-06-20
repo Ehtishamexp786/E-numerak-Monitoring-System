@@ -75,7 +75,7 @@ export default function Monitors() {
 
   return (
     <div>
-      <Topbar title="Monitors" subtitle="Manage all your services here" />
+      <Topbar title="Monitors" subtitle="Manage all your active services" />
 
       <div className="px-6 py-6 md:px-8">
         {error && (
@@ -90,7 +90,7 @@ export default function Monitors() {
             className="flex items-center gap-2 rounded-xl bg-vital px-4 py-2.5 text-sm font-semibold text-void transition hover:bg-vital/90"
           >
             <Plus size={15} />
-            New monitor
+            Add New Monitor
           </button>
         </div>
 
@@ -128,7 +128,7 @@ export default function Monitors() {
           <div className="flex items-start gap-3 rounded-xl bg-flatline/10 px-4 py-3">
             <AlertTriangle size={18} className="mt-0.5 flex-shrink-0 text-flatline" />
             <p className="text-sm text-paper">
-              <strong>{deleteTarget.name}</strong> will be permanently deleted. Its history will also be removed — this action cannot be undone.
+              <strong>{deleteTarget.name}</strong> will be permanently deleted, along with its history. This action cannot be undone.
             </p>
           </div>
           <div className="mt-5 flex justify-end gap-3">
@@ -142,7 +142,7 @@ export default function Monitors() {
               onClick={handleDelete}
               className="rounded-xl bg-flatline px-4 py-2.5 text-sm font-semibold text-void transition hover:bg-flatline/90"
             >
-              Yes, delete
+              Delete
             </button>
           </div>
         </Modal>

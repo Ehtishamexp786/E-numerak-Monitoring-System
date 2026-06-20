@@ -1,4 +1,5 @@
 const BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000";
+const TOKEN_KEY = "enumerak_auth_token";
 
 class ApiError extends Error {
   constructor(message, status) {
@@ -7,18 +8,32 @@ class ApiError extends Error {
   }
 }
 
+export const getToken = () => localStorage.getItem(TOKEN_KEY);
+export const setToken = (token) => localStorage.setItem(TOKEN_KEY, token);
+export const clearToken = () => localStorage.removeItem(TOKEN_KEY);
+
 async function request(path, options = {}) {
+  const token = getToken();
   let res;
   try {
     res = await fetch(`${BASE_URL}${path}`, {
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      },
       ...options,
     });
   } catch (err) {
     throw new ApiError(
-      "Cannot connect to the backend. Please check if the server is running.",
+      "Could not reach the backend. Check that the server is running.",
       0
     );
+  }
+
+  if (res.status === 401 && path !== "/api/auth/login") {
+    clearToken();
+    window.dispatchEvent(new Event("auth:expired"));
+    throw new ApiError("Your session has expired. Please log in again.", 401);
   }
 
   if (!res.ok) {
@@ -33,6 +48,10 @@ async function request(path, options = {}) {
   if (res.status === 204) return null;
   return res.json();
 }
+
+// ---------- Auth ----------
+export const login = (password) =>
+  request("/api/auth/login", { method: "POST", body: JSON.stringify({ password }) });
 
 // ---------- Monitors ----------
 export const getMonitors = () => request("/api/monitors/");

@@ -12,9 +12,9 @@ const TYPE_DOT = {
 };
 
 const TYPE_LABEL = {
-  down: "Server Down",
-  up: "Server Restored",
-  slow: "Slow Response",
+  down: "Server down",
+  up: "Server restored",
+  slow: "Slow response",
   error: "Error",
 };
 
@@ -30,8 +30,8 @@ export default function AlertHistory({ alerts }) {
     return (
       <EmptyState
         icon={BellOff}
-        title="No alerts received yet"
-        description="When a monitor goes down or restores, its record will be displayed here."
+        title="No alerts found"
+        description="When a monitor goes down or recovers, its record will appear here."
       />
     );
   }
@@ -54,7 +54,7 @@ export default function AlertHistory({ alerts }) {
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState title="No alerts found for this filter" />
+        <EmptyState title="No alerts match this filter" />
       ) : (
         <ol className="relative border-l border-hairline pl-6">
           {filtered.map((alert) => (
@@ -81,7 +81,7 @@ export default function AlertHistory({ alerts }) {
                   <span>{alert.whatsapp_number}</span>
                   <span
                     className={clsx(
-                      "flex items-center gap-1 capitalize",
+                      "flex items-center gap-1",
                       alert.status === "sent" ? "text-vital" : "text-flatline"
                     )}
                   >

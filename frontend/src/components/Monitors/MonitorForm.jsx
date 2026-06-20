@@ -47,12 +47,12 @@ function NumberChips({ numbers, setNumbers }) {
             }
           }}
           onBlur={add}
-          placeholder={numbers.length ? "add more..." : "923xxxxxxxxx"}
+          placeholder={numbers.length ? "Add another..." : "923xxxxxxxxx"}
           className="min-w-[120px] flex-1 bg-transparent py-1 font-mono text-xs text-paper placeholder:text-mist focus:outline-none"
         />
       </div>
       <p className="mt-1.5 text-xs text-mist">
-        Press Enter or comma to add a number — include country code, e.g., 923271141797
+        Press Enter or comma to add a number. Please include the country code (e.g., 923271141797).
       </p>
     </div>
   );
@@ -74,13 +74,13 @@ export default function MonitorForm({ initial, onSubmit, onCancel, submitting })
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim() || !url.trim()) {
-      setError("Name and URL are required.");
+      setError("Both Name and URL are required fields.");
       return;
     }
     try {
       new URL(url);
     } catch {
-      setError("Invalid URL format — ensure it starts with https://");
+      setError("Invalid URL format. Please ensure it starts with https://");
       return;
     }
     setError("");
@@ -101,7 +101,7 @@ export default function MonitorForm({ initial, onSubmit, onCancel, submitting })
         <input
           value={name}
           onChange={(e) => setName(e.target.value)}
-          placeholder="e.g., Invoice API"
+          placeholder="e.g. Invoice API"
           className="w-full rounded-xl border border-hairline bg-void/40 px-3.5 py-2.5 text-sm text-paper placeholder:text-mist focus:outline-none focus:ring-2 focus:ring-wire/40"
         />
       </div>
@@ -143,7 +143,7 @@ export default function MonitorForm({ initial, onSubmit, onCancel, submitting })
       </div>
 
       <label className="flex items-center justify-between rounded-xl border border-hairline bg-void/40 px-3.5 py-3">
-        <span className="text-sm text-paper">Send WhatsApp alert on downtime</span>
+        <span className="text-sm text-paper">Send WhatsApp alerts when status is down</span>
         <input
           type="checkbox"
           checked={alertOnDown}

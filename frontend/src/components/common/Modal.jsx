@@ -21,7 +21,7 @@ export default function Modal({ title, children, onClose }) {
           <button
             onClick={onClose}
             className="rounded-lg p-1.5 text-mist transition hover:bg-raised hover:text-paper"
-            aria-label="Band karo"
+            aria-label="Close"
           >
             <X size={18} />
           </button>

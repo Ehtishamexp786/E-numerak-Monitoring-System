@@ -22,8 +22,8 @@ export default function LogViewer({ logs }) {
     return (
       <EmptyState
         icon={TerminalSquare}
-        title="No logs yet"
-        description="Records will appear here after the first health check."
+        title="No logs available"
+        description="Records will appear here once the first health check is completed."
       />
     );
   }

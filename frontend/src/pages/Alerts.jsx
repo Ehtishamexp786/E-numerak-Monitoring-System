@@ -31,7 +31,10 @@ export default function Alerts() {
 
   return (
     <div>
-      <Topbar title="Alerts" subtitle="Har down aur recovery ka record" />
+      <Topbar 
+        title="Alerts" 
+        subtitle="View all downtime and recovery records" 
+      />
       <div className="px-6 py-6 md:px-8">
         {error && (
           <div className="mb-5 rounded-xl border border-amber/30 bg-amber/10 px-4 py-3 text-sm text-amber">

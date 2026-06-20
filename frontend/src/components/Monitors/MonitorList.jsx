@@ -30,7 +30,7 @@ export default function MonitorList({ monitors, onEdit, onDelete, onToggle, onAd
       <EmptyState
         icon={ServerOff}
         title="No monitors yet"
-        description="Add your first monitor to get notified when a service goes down."
+        description="Add your first monitor to know the moment a service goes down."
         action={
           <button
             onClick={onAddNew}
@@ -74,7 +74,7 @@ export default function MonitorList({ monitors, onEdit, onDelete, onToggle, onAd
       </div>
 
       {filtered.length === 0 ? (
-        <EmptyState title="No results found" description="Try changing your search or filters." />
+        <EmptyState title="Nothing found" description="Try a different search or filter." />
       ) : (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map((m) => (

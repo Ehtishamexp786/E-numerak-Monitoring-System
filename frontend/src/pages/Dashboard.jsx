@@ -94,8 +94,8 @@ export default function Dashboard() {
         {!loading && monitors.length === 0 ? (
           <EmptyState
             icon={Server}
-            title="No monitors are being tracked"
-            description="Add your first monitor to start seeing its pulse on the dashboard."
+            title="No monitors found"
+            description="Add your first monitor to start tracking your service performance."
             action={
               <Link
                 to="/monitors"
@@ -117,7 +117,7 @@ export default function Dashboard() {
             <div className="mt-6 rounded-2xl border border-hairline bg-panel p-5">
               <div className="mb-4 flex items-baseline justify-between">
                 <h2 className="font-display text-sm font-semibold text-paper">Live pulse</h2>
-                <span className="font-mono text-[11px] text-mist">recent checks, each row is a service</span>
+                <span className="font-mono text-[11px] text-mist">Recent checks; each row represents a service</span>
               </div>
               <div className="space-y-4">
                 {monitors.map((m) => (
@@ -155,7 +155,7 @@ export default function Dashboard() {
                   </Link>
                 </div>
                 {alerts.length === 0 ? (
-                  <p className="text-xs text-mist">No alerts yet.</p>
+                  <p className="text-xs text-mist">No alerts recorded yet.</p>
                 ) : (
                   <ul className="space-y-3">
                     {alerts.slice(0, 4).map((a) => (
@@ -168,7 +168,7 @@ export default function Dashboard() {
                         <div>
                           <p className="text-paper">{a.monitor_name}</p>
                           <p className="text-mist">
-                            {a.alert_type === "down" ? "went down" : "back online"}
+                            {a.alert_type === "down" ? "Server is down" : "Service recovered"}
                           </p>
                         </div>
                       </li>

@@ -1,14 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from contextlib import asynccontextmanager
 from app.db.database import create_tables
-from app.api.routes import monitors, alerts, logs, dashboard
+from app.api.routes import monitors, alerts, logs, dashboard, auth
+from app.api.routes.auth import verify_token
 from app.core.scheduler import start_scheduler, stop_scheduler
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """This function is used to ensures when the server will run before start running 
-    all tables should create first then server will run"""
     await create_tables()
     await start_scheduler()
     yield
@@ -19,7 +19,7 @@ app = FastAPI(
     title="Production Monitoring System",
     description="AI-Powered Server Monitoring with WhatsApp Alerts",
     version="1.0.0",
-    lifespan=lifespan,
+    lifespan=lifespan
 )
 
 app.add_middleware(
@@ -30,11 +30,27 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Public — no token required
+app.include_router(auth.router, prefix="/api/auth", tags=["Auth"])
 
-app.include_router(dashboard.router, prefix="/api/dashboard", tags=["Dashboard"])
-app.include_router(monitors.router, prefix="/api/monitors", tags=["Monitors"])
-app.include_router(alerts.router, prefix="/api/alerts", tags=["Alerts"])
-app.include_router(logs.router, prefix="/api/logs", tags=["Logs"])
+# Protected — every call must include a valid Bearer token
+app.include_router(
+    dashboard.router, prefix="/api/dashboard", tags=["Dashboard"],
+    dependencies=[Depends(verify_token)],
+)
+app.include_router(
+    monitors.router, prefix="/api/monitors", tags=["Monitors"],
+    dependencies=[Depends(verify_token)],
+)
+app.include_router(
+    alerts.router, prefix="/api/alerts", tags=["Alerts"],
+    dependencies=[Depends(verify_token)],
+)
+app.include_router(
+    logs.router, prefix="/api/logs", tags=["Logs"],
+    dependencies=[Depends(verify_token)],
+)
+
 
 @app.get("/")
 async def root():

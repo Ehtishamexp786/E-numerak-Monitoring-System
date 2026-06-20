@@ -20,8 +20,8 @@ export default function MonitorCard({ monitor, onEdit, onDelete, onToggle }) {
               {monitor.name}
             </h3>
             {!monitor.is_active && (
-              <span className="rounded-full bg-raised px-2 py-0.5 font-mono text-[10px] text-mist">
-                paused
+              <span className="rounded-full bg-raised px-2 py-0.5 font-mono text-[10px] uppercase text-mist">
+                Paused
               </span>
             )}
           </div>

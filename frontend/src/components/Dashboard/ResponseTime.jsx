@@ -15,7 +15,7 @@ export default function ResponseTime({ data = [], color = "#5B8DEF" }) {
   if (data.length === 0) {
     return (
       <div className="flex h-32 items-center justify-center font-mono text-xs text-mist">
-        No response time data found yet
+        No response time data yet
       </div>
     );
   }
