@@ -11,6 +11,8 @@ __pycache__/
 *.db
 *.sqlite3
 
+config.py
+
 # Node modules
 node_modules/
 
