@@ -22,7 +22,7 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 15
 
 DEBUG=True
 
-raw_origins = os.getenv("ALLOWED_ORIGIN", "http://localhost:5173")
+raw_origins = os.getenv("ALLOWED_ORIGIN")
 
 ALLOWED_ORIGINS = [origin.strip() for origin in raw_origins.split(",") if origin]
 
