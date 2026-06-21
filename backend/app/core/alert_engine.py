@@ -3,12 +3,12 @@ from datetime import datetime
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.models.monitor import Monitor, MonitorStatus
 from app.models.alert import Alert, AlertType, AlertStatus
-from app.config import settings
-
+from app.utils.config import GREEN_API_INSTANCE_ID,GREEN_API_TOKEN,GREEN_API_URL
+from datetime import timezone
 
 async def send_whatsapp_alert(phone_number: str, message: str) -> bool:
     try:
-        url = f"{settings.GREEN_API_URL}/waInstance{settings.GREEN_API_INSTANCE_ID}/sendMessage/{settings.GREEN_API_TOKEN}"
+        url = f"{GREEN_API_URL}/waInstance{GREEN_API_INSTANCE_ID}/sendMessage/{GREEN_API_TOKEN}"
 
         payload = {
             "chatId": f"{phone_number}@c.us",
@@ -19,19 +19,57 @@ async def send_whatsapp_alert(phone_number: str, message: str) -> bool:
             response = await client.post(url, json=payload)
 
             if response.status_code == 200:
-                print(f"✅ WhatsApp Alert Send: {phone_number}")
+                print(f"WhatsApp alert sent successfully: {phone_number}")
                 return True
             else:
-                print(f"❌ WhatsApp alert fail: {response.text}")
+                print(f"WhatsApp alert failed: {response.text}")
                 return False
 
     except Exception as e:
-        print(f"❌ WhatsApp error: {str(e)}")
+        print(f"WhatsApp error: {str(e)}")
         return False
 
 
+def build_down_message(monitor: Monitor, check_result: dict, timestamp: str) -> str:
+    error_detail = check_result.get("error_message") or "No additional details available."
+    response_time = check_result.get("response_time_ms")
+    response_time_str = f"{response_time:.0f} ms" if response_time is not None else "N/A"
+    previous_status = check_result["old_status"].value.upper()
+
+    return (
+        "*SERVICE DOWN ALERT*\n\n"
+        f"Service: {monitor.name}\n"
+        f"URL: {monitor.url}\n"
+        f"Previous Status: {previous_status}\n"
+        f"Current Status: DOWN\n"
+        f"Response Time: {response_time_str}\n"
+        f"Issue: Server is not accepting requests\n"
+        f"Detected At: {timestamp} UTC\n\n"
+        "This service is currently unreachable or not responding as expected. "
+        "Immediate attention is required to restore normal operation.\n\n"
+        "— E-numerak Monitoring System"
+    )
+
+
+def build_up_message(monitor: Monitor, check_result: dict, timestamp: str) -> str:
+    response_time = check_result.get("response_time_ms")
+    response_time_str = f"{response_time:.0f} ms" if response_time is not None else "N/A"
+
+    return (
+        "*SERVICE RESTORED*\n\n"
+        f"Service: {monitor.name}\n"
+        f"URL: {monitor.url}\n"
+        f"Previous Status: DOWN\n"
+        f"Current Status: UP\n"
+        f"Response Time: {response_time_str}\n"
+        f"Restored At: {timestamp} UTC\n\n"
+        "The service is responding normally again. No further action is required at this time.\n\n"
+        "— E-numerak Monitoring System"
+    )
+
+
 async def process_alerts(check_result: dict, monitor: Monitor, db: AsyncSession):
-    # Sirf tab alert karo jab status change hua ho
+    # Only send an alert when the status has actually changed.
     if check_result["old_status"] == check_result["new_status"]:
         return
 
@@ -41,41 +79,20 @@ async def process_alerts(check_result: dict, monitor: Monitor, db: AsyncSession)
     if not monitor.alert_whatsapp_numbers:
         return
 
-    # Alert message banao
+    # A single UTC-aware timestamp is used for both the message text and the
+    # database record, so they always stay in agreement.
+    now_utc = datetime.now(timezone.utc)
+    timestamp = now_utc.strftime("%Y-%m-%d %H:%M:%S")
+
     if check_result["new_status"] == MonitorStatus.DOWN:
         alert_type = AlertType.DOWN
-        emoji = "🔴"
-        message = f"""
-{emoji} *SERVER DOWN ALERT!*
-
-📌 Monitor: {monitor.name}
-🌐 URL: {monitor.url}
-❌ Status: DOWN
-⏱ Response Time: {check_result['response_time_ms']:.0f}ms
-❗ Error: {check_result['error_message']}
-🕐 Time: {datetime.utcnow().strftime('%Y-%m-%d %H:%M:%S')} UTC
-
-Foran check karo!
-        """.strip()
-
+        message = build_down_message(monitor, check_result, timestamp)
     elif check_result["new_status"] == MonitorStatus.UP:
         alert_type = AlertType.UP
-        emoji = "🟢"
-        message = f"""
-{emoji} *SERVER BACK ONLINE!*
-
-📌 Monitor: {monitor.name}
-🌐 URL: {monitor.url}
-✅ Status: UP
-⏱ Response Time: {check_result['response_time_ms']:.0f}ms
-🕐 Time: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} UTC
-
-Server wapas chal gaya!
-        """.strip()
+        message = build_up_message(monitor, check_result, timestamp)
     else:
         return
 
-    # Har number ko alert bhejo
     numbers = [n.strip() for n in monitor.alert_whatsapp_numbers.split(",")]
 
     for number in numbers:
@@ -84,7 +101,6 @@ Server wapas chal gaya!
 
         success = await send_whatsapp_alert(number, message)
 
-        # Alert record save karo
         alert = Alert(
             monitor_id=monitor.id,
             monitor_name=monitor.name,
@@ -92,7 +108,7 @@ Server wapas chal gaya!
             status=AlertStatus.SENT if success else AlertStatus.FAILED,
             message=message,
             whatsapp_number=number,
-            sent_at=datetime.now() if success else None
+            sent_at=now_utc if success else None
         )
         db.add(alert)
 

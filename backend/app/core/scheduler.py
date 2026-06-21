@@ -5,7 +5,7 @@ from app.db.database import AsyncSessionLocal
 from app.models.monitor import Monitor
 from app.core.monitor_engine import check_single_monitor
 from app.core.alert_engine import process_alerts
-from app.config import settings
+from app.utils.config import CHECK_INTERVAL_SECONDS
 from datetime import datetime
 
 scheduler = AsyncIOScheduler()
@@ -38,12 +38,12 @@ async def run_monitoring_job():
 async def start_scheduler():
     scheduler.add_job(
         run_monitoring_job,
-        trigger=IntervalTrigger(seconds=settings.CHECK_INTERVAL_SECONDS),
+        trigger=IntervalTrigger(seconds=CHECK_INTERVAL_SECONDS),
         id="monitoring_job",
         replace_existing=True
     )
     scheduler.start()
-    print(f"✅ Scheduler started! Every {settings.CHECK_INTERVAL_SECONDS} second it will check!")
+    print(f"Scheduler started! Every {CHECK_INTERVAL_SECONDS} second it will check!")
 
 async def stop_scheduler():
     scheduler.shutdown()

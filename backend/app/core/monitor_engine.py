@@ -24,12 +24,12 @@ async def check_single_monitor(monitor: Monitor, db: AsyncSession) -> dict:
                 status = LogStatus.SUCCESS
             else:
                 status = LogStatus.FAILURE
-                error_message = f"Expected {monitor.expected_status_code}, mila {response.status_code}"
+                error_message = f"Expected {monitor.expected_status_code}, found {response.status_code}"
 
     except httpx.TimeoutException:
         response_time_ms = (time.time() - start_time) * 1000
         status = LogStatus.TIMEOUT
-        error_message = "Request timeout ho gaya!"
+        error_message = "Request has been time out !"
 
     except Exception as e:
         response_time_ms = (time.time() - start_time) * 1000
@@ -56,7 +56,7 @@ async def check_single_monitor(monitor: Monitor, db: AsyncSession) -> dict:
         monitor.status = MonitorStatus.DOWN
 
     monitor.response_time_ms = response_time_ms
-    monitor.last_checked_at = datetime.utcnow()
+    monitor.last_checked_at = datetime.now()
 
     await db.commit()
 

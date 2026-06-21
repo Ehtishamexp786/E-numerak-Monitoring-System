@@ -5,7 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from pydantic import BaseModel
 
-from app.config import settings
+from app.utils.config import DASHBOARD_PASSWORD , ACCESS_TOKEN_EXPIRE_MINUTES
 from app.core.security import create_access_token, decode_access_token
 from app.schemas.login import LoginRequest,LoginResponse
 
@@ -15,19 +15,19 @@ bearer_scheme = HTTPBearer(auto_error=False)
 
 @router.post("/login", response_model=LoginResponse)
 async def login(data: LoginRequest):
-    if not settings.DASHBOARD_PASSWORD:
+    if not DASHBOARD_PASSWORD:
         raise HTTPException(
             status_code=500,
             detail="DASHBOARD_PASSWORD is not configured on the server.",
         )
 
-    if not secrets.compare_digest(data.password, settings.DASHBOARD_PASSWORD):
+    if not secrets.compare_digest(data.password, DASHBOARD_PASSWORD):
         raise HTTPException(status_code=401, detail="Incorrect password.")
 
     token = create_access_token()
     return LoginResponse(
         access_token=token,
-        expires_in_minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES,
+        expires_in_minutes=ACCESS_TOKEN_EXPIRE_MINUTES,
     )
 
 
