@@ -1,5 +1,7 @@
 from dotenv import load_dotenv
+
 import os
+
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL") 
@@ -19,3 +21,12 @@ DASHBOARD_PASSWORD = os.getenv("DASHBOARD_PASSWORD")
 ACCESS_TOKEN_EXPIRE_MINUTES = 15
 
 DEBUG=True
+
+raw_origins = os.getenv("ALLOWED_ORIGIN", "http://localhost:5173")
+
+ALLOWED_ORIGINS = [origin.strip() for origin in raw_origins.split(",") if origin]
+
+
+DOCS_USERNAME=os.getenv("DOCS_USERNAME")
+
+DOCS_PASSWORD=os.getenv("DOCS_PASSWORD")
